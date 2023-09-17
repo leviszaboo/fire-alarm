@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Who set off the fire alarm?',
-  description: 'Tracking fire alarms in SE Minervahaven',
+  description: 'Tracking which floor has the worst cooks in SE Minervahaven',
 }
 
 export default function RootLayout({
