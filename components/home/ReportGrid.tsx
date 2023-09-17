@@ -6,9 +6,17 @@ import { db } from "@/app/firebase/config";
 import { useEffect, useState } from "react";
 import ReportTile from "./ReportTile";
 import { FloorData, useReportStore } from "@/app/hooks/useReport";
+import BuildingStats from "./BuildingStats";
 
 export default function ReportGrid() {
+  const [totalReports, setTotalReports] = useState<number>(0)
   const { floorData, setFloorData } = useReportStore()
+  const floorDataArray = Object.keys(floorData).map((floor) => ({
+    floor: parseInt(floor),
+    fires: floorData[parseInt(floor)].fires,
+    reports: floorData[parseInt(floor)].reports,
+  }));
+  floorDataArray.sort((a, b) => b.reports - a.reports);
 
   useEffect(() => {
     async function fetchReports(ref: string) { 
@@ -39,10 +47,21 @@ export default function ReportGrid() {
     fetchReports("reports");
   }, [])
 
+  useEffect(() => {
+    let count = 0;
+    for (const floor in floorData) {
+      if (floorData.hasOwnProperty(floor)) {
+        count += floorData[floor].reports;
+      }
+    }
+    setTotalReports(count);
+  }, [floorData]);
+
   return (
     <div className="grid lg:grid-cols-4 sm:grid-cols-2 gap-16 p-8 pt-6">
-      {Object.keys(floorData).map((floor) => (
-        <ReportTile key={floor} floor={parseInt(floor)} fires={floorData[parseInt(floor)].fires} reports={floorData[parseInt(floor)].reports}/>
+      <BuildingStats reports={totalReports}/>
+      {floorDataArray.map((data) => (
+        <ReportTile key={data.floor} floor={data.floor} fires={data.fires} reports={data.reports} />
       ))}
     </div>
   )

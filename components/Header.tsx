@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { PawPrint } from 'lucide-react'
-import ReportDialog from './home/ReportDialog'
+import ReportDialog from './home/ReportDialog/ReportDialog'
 
 export default function Header() {
   return (

@@ -13,32 +13,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Label } from "../ui/label"
-import { ComboBox, ComboBoxOptions } from "../ComboBox"
+import { Label } from "../../ui/label"
+import { ComboBox } from "../../ComboBox"
 import { Siren, SmartphoneNfc } from "lucide-react";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/app/firebase/config";
 import { useReportStore } from "@/app/hooks/useReport";
 
-const floorOptions: ComboBoxOptions[] = [
-  { value: "floor 1", label: "Floor 1" },
-  { value: "floor 2", label: 'Floor 2' },
-  { value: "floor 3", label: 'Floor 3' },
-  { value: "floor 4", label: 'Floor 4' },
-  { value: "floor 5", label: 'Floor 5' },
-  { value: "floor 6", label: 'Floor 6' },
-  { value: "floor 7", label: 'Floor 7' },
-  { value: "floor 8", label: 'Floor 8' },
-];
-
-const yesNoOptions: ComboBoxOptions[] = [
-  { value: "yes", label: "Yes" },
-  { value: "no", label: "No" },
-];
+import { 
+  floorOptions,
+  yesNoOptions, 
+  durationOptions 
+} from "./dialogOptions";
 
 export default function ReportDialog() {
   const [floor, setFloor] = useState<number | null>(null);
   const [isFire, setIsFire] = useState<boolean | null>(null);
+  const [duration, setDuration] = useState<number | null>(null);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false)
@@ -62,17 +53,32 @@ export default function ReportDialog() {
     }
   }
 
+  function onSelectDuration(durationString: string) {
+    const duration = parseInt(durationString, 10); 
+    setDuration(duration);
+  }
+
   async function handleSubmit() {
     setLoading(true);
     setError("");
     try {
-      if (floor && !isNaN(floor) && floor <= 8 && floor >= 1 && (isFire === true || isFire === false)) {
-
+      if (
+        floor &&
+        !isNaN(floor) &&
+        floor >= 1 &&
+        floor <= 8 &&
+        (isFire === true || isFire === false) &&
+        duration &&
+        !isNaN(Number(duration)) &&
+        duration >= 1 &&
+        duration <= 10
+      ) {
         const documentId = uuidv4();
         const document = {
           id: documentId,
           floor: floor,
           isFire: isFire,
+          duration: duration,
           createdAt: new Date()
         }
   
@@ -86,6 +92,7 @@ export default function ReportDialog() {
       console.log(err)
     }
     setLoading(false);
+    setDuration(null)
     setFloor(null);
     setIsFire(null);
   }
@@ -124,6 +131,12 @@ export default function ReportDialog() {
               Was there an actual fire?
             </Label>
             <ComboBox optionsList={yesNoOptions} onSelect={onSelectIsFire}/>
+          </div>
+          <div className="grid grid-cols-2 items-center gap-4">
+            <Label htmlFor="duration" className={`text-left ${error ? "text-red-500" : null}`}>
+              Duration
+            </Label>
+            <ComboBox optionsList={durationOptions} onSelect={onSelectDuration} />
           </div>
         </div>
         <DialogFooter>
