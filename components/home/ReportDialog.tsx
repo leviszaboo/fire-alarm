@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "../ui/label"
 import { ComboBox, ComboBoxOptions } from "../ComboBox"
-import { Siren } from "lucide-react";
+import { Siren, SmartphoneNfc } from "lucide-react";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/app/firebase/config";
 import { useReportStore } from "@/app/hooks/useReport";
@@ -93,7 +93,11 @@ export default function ReportDialog() {
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
-        <Button size={"lg"}>Report Alarm</Button>
+        <Button size={"lg"}>
+          <SmartphoneNfc size={22} />
+          &nbsp;&nbsp;
+          Report Alarm
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
