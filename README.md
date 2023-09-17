@@ -3,7 +3,7 @@
 This simple app tracks which floor has the worst cooks in SE Minervahaven.
 Created with Next.js, Firebase, Typescript, and Shadcn UI.
 
-# Contributing
+## Contributing
 
 1. Fork the Repository
 Click the "Fork" button at the top right corner of this repository to create your copy of the project.
