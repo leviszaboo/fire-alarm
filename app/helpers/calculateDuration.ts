@@ -51,12 +51,14 @@ export default function averageDuration(data: DurationData) {
   }
 
   let sum = 0
+  let alarms = 0
 
   for (const average of Object.values(result)) {
     if (average) {
       sum += average
+      alarms++
     }
   }
 
-  return sum;
+  return { sum, alarms };
 }

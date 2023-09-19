@@ -14,6 +14,8 @@ import { FloorData, useReportStore } from "@/app/hooks/useReport";
 import BuildingStats from "./BuildingStats";
 import averageDuration from "@/app/helpers/calculateDuration";
 import minutesToHHMM from "@/app/helpers/minutesToHHMM";
+import Legend from "./Legend";
+import Loader from "../Loader";
 
 interface AverageDurations {
   [floor: number]: string
@@ -22,6 +24,10 @@ interface AverageDurations {
 export default function ReportGrid() {
   const [totalReports, setTotalReports] = useState<number>(0)
   const [averageDurations, setAverageDurations] = useState<AverageDurations>({})
+  const [estimatedAlarms, setEstimatedAlarms] = useState<number>(0)
+  const [totalDuration, setTotalDuration] = useState<number>(0)
+  const [loading, setLoading] = useState<boolean>(true)
+
   const { floorData, setFloorData } = useReportStore()
   const floorDataArray = Object.keys(floorData).map((floor) => ({
     floor: parseInt(floor),
@@ -59,17 +65,23 @@ export default function ReportGrid() {
         setFloorData(newFloorData);
         
         const averageDurationsResult: AverageDurations = {};
+        let totalDurationCounter = 0
+        let totalAlarmCounter = 0
+
         for (const floor of Object.keys(durationsByFloor)) {
           const key = parseInt(floor);
-          const duration = averageDuration(durationsByFloor[key])
-          averageDurationsResult[key] = minutesToHHMM(duration);
+          const durationData = averageDuration(durationsByFloor[key])
+          totalDurationCounter += durationData.sum
+          totalAlarmCounter += durationData.alarms
+          averageDurationsResult[key] = minutesToHHMM(durationData.sum);
         }
-  
+        
+        setEstimatedAlarms(totalAlarmCounter)
+        setTotalDuration(totalDurationCounter)
         setAverageDurations(averageDurationsResult);
-
-        console.log(durationsByFloor)
-        console.log(averageDurations)
+        setLoading(false);
       } catch(err) {
+        setLoading(false)
         console.log(err)
       }
     }
@@ -88,11 +100,19 @@ export default function ReportGrid() {
   }, [floorData]);
 
   return (
-    <div className="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 gap-16 p-8 pt-6">
-      <BuildingStats reports={totalReports}/>
-      {floorDataArray.map((data) => (
-        <ReportTile key={data.floor} floor={data.floor} fires={data.fires} reports={data.reports} duration={averageDurations[data.floor]}/>
-      ))}
-    </div>
+    <>
+      {loading && <Loader />}
+      {!loading && (
+        <>
+          <Legend />
+          <div className="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 gap-16 p-8 pt-6">
+            <BuildingStats reports={totalReports} duration={minutesToHHMM(totalDuration)} alarms={estimatedAlarms}/>
+            {floorDataArray.map((data) => (
+              <ReportTile key={data.floor} floor={data.floor} fires={data.fires} reports={data.reports} duration={averageDurations[data.floor]}/>
+            ))}
+          </div>
+        </>
+      )}
+    </>
   )
 }

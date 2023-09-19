@@ -73,7 +73,7 @@ export default function ReportDialog() {
         duration >= 1 &&
         duration <= 10
       ) {
-        const documentId = uuidv4();
+        const documentId = `${floor} - ${new Date().toISOString()}`
         const document = {
           id: documentId,
           floor: floor,
@@ -89,7 +89,7 @@ export default function ReportDialog() {
         setError("Some required elements are missing.")
       }
     } catch(err) {
-      console.log(err)
+      setError("Something went wrong. Try again.")
     }
     setLoading(false);
     setDuration(null)
