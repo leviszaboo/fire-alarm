@@ -10,13 +10,13 @@ export interface FloorData {
 interface ReportStore {
   floorData: { [floor: number]: FloorData };
   setFloorData: (data: { [floor: number]: FloorData }) => void;
-  addReport: (floor: number, isFire: boolean) => void;
+  addReport: (floor: number, isFire: boolean, duration: number) => void;
 }
 
 export const useReportStore = create<ReportStore>((set) => ({
   floorData: {},
   setFloorData: (data) => set({ floorData: data }),
-  addReport: (floor, isFire) => {
+  addReport: (floor, isFire, duration) => {
     set((state) => {
       const updatedData = { ...state.floorData };
 
@@ -29,6 +29,8 @@ export const useReportStore = create<ReportStore>((set) => ({
       if (isFire) {
         updatedData[floor].fires++;
       }
+
+      updatedData[floor].duration += duration
 
       return { floorData: updatedData };
     });

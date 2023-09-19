@@ -37,16 +37,17 @@ export default function ReportDialog() {
   const { addReport } = useReportStore()
  
   function onSelectFloor(floorString: string) {
+    console.log(floorString)
     const lastChar = floorString.charAt(floorString.length - 1);
     const floorNumber = parseInt(lastChar, 10); 
     setFloor(floorNumber)
   }
 
   function onSelectIsFire(fireString: string) {
+    console.log(fireString)
     if (fireString === "yes") {
       setIsFire(true)
-    } 
-    if (fireString === "no") {
+    } else if (fireString === "no") {
       setIsFire(false)
     } else {
       setIsFire(null)
@@ -54,13 +55,29 @@ export default function ReportDialog() {
   }
 
   function onSelectDuration(durationString: string) {
-    const duration = parseInt(durationString, 10); 
-    setDuration(duration);
+    console.log(durationString);
+    const match = durationString.match(/(\d+)/);
+  
+    if (match) {
+      console.log(match)
+      const duration = parseInt(match[0], 10);
+  
+      if (!isNaN(duration) && duration >= 1 && duration <= 10) {
+        setDuration(duration);
+        console.log(duration);
+      } else {
+        console.log("Invalid duration input.");
+      }
+    } else {
+      console.log("No valid duration found in the input.");
+    }
   }
+  
 
   async function handleSubmit() {
     setLoading(true);
     setError("");
+    console.log(floor, isFire, duration)
     try {
       if (
         floor &&
@@ -83,9 +100,10 @@ export default function ReportDialog() {
         }
   
         await setDoc(doc(db, `reports/${documentId}`), document);
-        addReport(floor, isFire)
+        addReport(floor, isFire, duration)
         setDialogOpen(false);
       } else {
+        console.log(duration)
         setError("Some required elements are missing.")
       }
     } catch(err) {

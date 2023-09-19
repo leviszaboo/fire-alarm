@@ -23,7 +23,6 @@ interface AverageDurations {
 
 export default function ReportGrid() {
   const [totalReports, setTotalReports] = useState<number>(0)
-  const [averageDurations, setAverageDurations] = useState<AverageDurations>({})
   const [estimatedAlarms, setEstimatedAlarms] = useState<number>(0)
   const [totalDuration, setTotalDuration] = useState<number>(0)
   const [loading, setLoading] = useState<boolean>(true)
@@ -33,6 +32,7 @@ export default function ReportGrid() {
     floor: parseInt(floor),
     fires: floorData[parseInt(floor)].fires,
     reports: floorData[parseInt(floor)].reports,
+    duration: floorData[parseInt(floor)].duration,
   }));
   floorDataArray.sort((a, b) => b.reports - a.reports);
 
@@ -62,9 +62,6 @@ export default function ReportGrid() {
             durationsByFloor[data.floor][data.createdAt.toMillis()] = data.duration;
           });
   
-        setFloorData(newFloorData);
-        
-        const averageDurationsResult: AverageDurations = {};
         let totalDurationCounter = 0
         let totalAlarmCounter = 0
 
@@ -73,12 +70,13 @@ export default function ReportGrid() {
           const durationData = averageDuration(durationsByFloor[key])
           totalDurationCounter += durationData.sum
           totalAlarmCounter += durationData.alarms
-          averageDurationsResult[key] = minutesToHHMM(durationData.sum);
+          newFloorData[key].duration += durationData.sum
         }
+
+        setFloorData(newFloorData);
         
         setEstimatedAlarms(totalAlarmCounter)
         setTotalDuration(totalDurationCounter)
-        setAverageDurations(averageDurationsResult);
         setLoading(false);
       } catch(err) {
         setLoading(false)
@@ -108,7 +106,7 @@ export default function ReportGrid() {
           <div className="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 gap-16 p-8 pt-6">
             <BuildingStats reports={totalReports} duration={minutesToHHMM(totalDuration)} alarms={estimatedAlarms}/>
             {floorDataArray.map((data) => (
-              <ReportTile key={data.floor} floor={data.floor} fires={data.fires} reports={data.reports} duration={averageDurations[data.floor]}/>
+              <ReportTile key={data.floor} floor={data.floor} fires={data.fires} reports={data.reports} duration={minutesToHHMM(data.duration)}/>
             ))}
           </div>
         </>
