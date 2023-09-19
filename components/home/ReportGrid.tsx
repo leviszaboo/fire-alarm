@@ -17,9 +17,6 @@ import minutesToHHMM from "@/app/helpers/minutesToHHMM";
 import Legend from "./Legend";
 import Loader from "../Loader";
 
-interface AverageDurations {
-  [floor: number]: string
-}
 
 export default function ReportGrid() {
   const [totalReports, setTotalReports] = useState<number>(0)
@@ -43,24 +40,24 @@ export default function ReportGrid() {
         const newFloorData: { [floor: number]: FloorData } = {};
         const durationsByFloor: { [floor: number]: { [createdAt: number]: number } } = {};
   
-          querySnapshot.forEach((doc) => {
-            const data = doc.data() as { floor: number, isFire: boolean, createdAt: Timestamp, duration: number}
-  
-            if (!newFloorData[data.floor]) {
-              newFloorData[data.floor] = { reports: 0, fires: 0, duration: 0 };
-            }
-  
-            newFloorData[data.floor].reports++;
-            if (data.isFire) {
-              newFloorData[data.floor].fires++;
-            }
+        querySnapshot.forEach((doc) => {
+          const data = doc.data() as { floor: number, isFire: boolean, createdAt: Timestamp, duration: number}
 
-            if (!durationsByFloor[data.floor]) {
-              durationsByFloor[data.floor] = {};
-            }
-    
-            durationsByFloor[data.floor][data.createdAt.toMillis()] = data.duration;
-          });
+          if (!newFloorData[data.floor]) {
+            newFloorData[data.floor] = { reports: 0, fires: 0, duration: 0 };
+          }
+
+          newFloorData[data.floor].reports++;
+          if (data.isFire) {
+            newFloorData[data.floor].fires++;
+          }
+
+          if (!durationsByFloor[data.floor]) {
+            durationsByFloor[data.floor] = {};
+          }
+
+          durationsByFloor[data.floor][data.createdAt.toMillis()] = data.duration;
+        });
   
         let totalDurationCounter = 0
         let totalAlarmCounter = 0
