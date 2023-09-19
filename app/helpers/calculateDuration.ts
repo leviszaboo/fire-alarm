@@ -4,7 +4,7 @@ interface DurationData {
 
 function averageAroundTimestamp(data: DurationData, timestamp: number, processedTimestamps:  {[timestamp: number]: boolean}) {
   const timestampMs = timestamp;
-  const fiveMinuteInterval = 5 * 60 * 1000; 
+  const interval = 10 * 60 * 1000; 
 
   let sum = 0;
   let count = 0;
@@ -13,7 +13,7 @@ function averageAroundTimestamp(data: DurationData, timestamp: number, processed
     if (data.hasOwnProperty(otherTimestamp)) {
       const otherTimestampMs = parseInt(otherTimestamp);
 
-      if (Math.abs(otherTimestampMs - timestampMs) <= fiveMinuteInterval) {
+      if (Math.abs(otherTimestampMs - timestampMs) <= interval) {
         const number = data[otherTimestampMs];
         if (typeof number === 'number') {
           sum += number;

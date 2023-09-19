@@ -4,7 +4,7 @@ import FadeIn from "../FadeIn";
 export default function Legend() {
   return (
     <FadeIn delay={0.1}>
-      <div className="flex gap-4 pt-2 pb-3">
+      <div className="flex gap-4 lg:pt-0 md:pt-0 pt-2 pb-3">
         <div className="flex ml-auto">
           <BellRing fill="red"/>
           <h3 className="text-l font-semibold pl-1">- Reports</h3>

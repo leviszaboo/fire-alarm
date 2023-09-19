@@ -3,7 +3,7 @@ import { create } from 'zustand';
 export interface FloorData {
   reports: number;
   fires: number;
-  duration: number
+  duration: number;
 }
 
 interface ReportStore {
@@ -29,12 +29,12 @@ export const useReportStore = create<ReportStore>((set) => ({
         updatedData[floor].fires++;
       }
 
-      updatedData[floor].duration += duration
+      updatedData[floor].duration += duration;
 
       return { floorData: updatedData };
     });
   },
-
 }));
+
 
 
